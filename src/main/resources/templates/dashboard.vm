@@ -1,0 +1,10 @@
+<div>
+    <h1>Dashboard</h1>
+
+    #foreach($link in $links)
+    <p>
+        <a href="${link.productElement(0)}">${link.productElement(1)}</a>
+    </p>
+    #end
+
+</div>

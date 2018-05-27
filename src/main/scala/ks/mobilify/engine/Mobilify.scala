@@ -1,4 +1,4 @@
-package ks.mobillis.engine
+package ks.mobilify.engine
 
 import java.util.Date
 
@@ -26,16 +26,21 @@ object Mobilify extends App {
     override val amout: Int = -exAmount
   }
 
-  case class Account(transactions: Iterable[Transaction])
+  case class Account(name: String) {
+    def getName() = name
+    val transactions: AccountTransactions = AccountTransactions(List())
+  }
 
-  def balance(account: Account): Int = balance(account.transactions)
+  case class AccountTransactions(transactions: Iterable[Transaction])
+
+  def balance(account: AccountTransactions): Int = balance(account.transactions)
 
   def balance(transactions: Iterable[Transaction]): Int = transactions.foldLeft(0)((acc, tr) => acc + tr.amout)
 
-  def categorize(account: Account): Map[String, Iterable[Transaction]] = account.transactions.groupBy(_.category)
+  def categorize(account: AccountTransactions): Map[String, Iterable[Transaction]] = account.transactions.groupBy(_.category)
 
   override def main(args: Array[String]): Unit = {
-    val account = Account(
+    val account = AccountTransactions(
       List(
         Income(1, "c1", "desc1"),
         Income(1, "c1", "desc1"),

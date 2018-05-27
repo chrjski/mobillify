@@ -1,0 +1,18 @@
+<div>
+    <h1>
+        Accounts : ${accounts.size()}
+    </h1>
+    #if (${accounts.size()} == 0)
+    <div>No accounts yet</div>
+    #else
+    <div>
+        #foreach ($account in $accounts)
+        <div>
+            <ul>
+                <li><a href="/accounts/details/${account.name}">${account.name}</a></li>
+            </ul>
+        </div>
+        #end
+    </div>
+    #end
+</div>
