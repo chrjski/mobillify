@@ -20,12 +20,13 @@ object ViewUtil {
 
     val nmap = new util.LinkedHashMap[String, AnyRef]()
 
+    nmap.put("body", templatePath)
     model.foldLeft(nmap)((acc, el) => {
       acc.put(el._1, el._2)
       acc
     })
 
-    val view = new ModelAndView(nmap, templatePath)
+    val view = new ModelAndView(nmap, Paths.Templates.Body)
     strictVelocityEngine.render(view)
   }
 

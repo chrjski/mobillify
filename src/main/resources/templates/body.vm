@@ -1,0 +1,6 @@
+<html>
+#include("templates/layout.vm")
+<body>
+#parse($body)
+</body>
+</html>

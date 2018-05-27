@@ -19,6 +19,7 @@ object Paths {
 
   object Templates {
 
+    val Body = "templates/body.vm"
     val Dashboard = "templates/dashboard.vm"
     val Expense = "templates/expense.vm"
     val Income = "templates/income.vm"
@@ -39,8 +40,19 @@ object Paths {
           .toArray
       ), Templates.Dashboard)
 
-    def Expense(): Route = (req: Request, res: Response) =>
-      ViewUtil.render(req, Map(), Templates.Expense)
+    def Expense(): Route = (req: Request, res: Response) => {
+      log.info("Adding an expense")
+      ViewUtil.render(req, Map(
+        "accounts" -> accdao.all()
+      ), Templates.Expense)
+    }
+
+    def ExpensePost(): Route = (req: Request, res: Response) => {
+      log.info("Expense added "+req.queryMap())
+      accdao.expense(req.queryMap())
+      res.redirect("/expense")
+      ""
+    }
 
     def Income(): Route = (req: Request, res: Response) =>
       ViewUtil.render(req, Map(), Templates.Income)
@@ -72,7 +84,7 @@ object Paths {
           "redirect to accounts"
 
         case ValidAccount(_) =>
-          log.info("Duplicated name " + accountName + " "+account)
+          log.info("Duplicated name " + accountName + " " + account)
           ViewUtil.render(
             req,
             Map(

@@ -10,8 +10,13 @@ import java.util
 import java.util.Date
 
 import ks.mobilify.engine.{DataStore, Mobilify}
+import spark.QueryParamsMap
 
 class AccountDao() {
+  def expense(map: QueryParamsMap) = {
+    // TODO implement
+  }
+
   def add(accountName: String) = {
     DataStore.accounts = new Mobilify.Account(accountName) :: DataStore.accounts
   }
