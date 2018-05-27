@@ -27,8 +27,7 @@ object Mobilify extends App {
   }
 
   case class Account(name: String) {
-    def getName() = name
-    val transactions: AccountTransactions = AccountTransactions(List())
+    var transactions: AccountTransactions = AccountTransactions(List())
   }
 
   case class AccountTransactions(transactions: Iterable[Transaction])

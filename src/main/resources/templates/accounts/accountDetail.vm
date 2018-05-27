@@ -1,1 +1,23 @@
-<h1>$account.name</h1>
+<div>
+    <div><a href="/accounts">All Accounts</a></div>
+    <h1>$account.name</h1>
+    <div>
+        <div>Transactions</div>
+        <ul>
+            #if (${account.transactions.isEmpty()})
+            <li>0</li>
+            #else
+            #foreach ($transaction in ${account.transactions})
+            <li>
+                <div>
+                    <div>$transaction.category</div>
+                    <div>$transaction.amount</div>
+                    <div>$transaction.date</div>
+                    <div>$transaction.description</div>
+                </div>
+            </li>
+            #end
+            #end
+        </ul>
+    </div>
+</div>
