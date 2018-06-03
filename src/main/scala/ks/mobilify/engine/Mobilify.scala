@@ -8,23 +8,27 @@ import java.util.Date
 object Mobilify extends App {
 
   trait Transaction {
-    val iddate: Date = new Date()
+    val iddate: Long = new Date().getTime
 
-    var amount: Float
-    var transactionDate: Date = new Date()
-    var category: String
-    var description: String
+    val amount: Float
+    val transactionDate: Date
+    val category: String
+    val description: String
   }
 
   case class Income(inAmount: Float,
                     override val category: String,
-                    override val description: String) extends Transaction {
+                    override val description: String,
+                    override val transactionDate: Date) extends Transaction {
+    def this(transaction: Transaction) = this(transaction.amount, transaction.category, transaction.description, transaction.transactionDate)
     override val amount = inAmount
   }
 
   case class Expense(exAmount: Float,
                      override val category: String,
-                     override val description: String) extends Transaction {
+                     override val description: String,
+                     override val transactionDate: Date) extends Transaction {
+    def this(transaction: Transaction) = this(transaction.amount, transaction.category, transaction.description, transaction.transactionDate)
     override val amount = -exAmount
   }
 
@@ -42,13 +46,7 @@ object Mobilify extends App {
   def categorize(account: AccountTransactions): Map[String, Iterable[Transaction]] = account.transactions.groupBy(_.category)
 
   override def main(args: Array[String]): Unit = {
-    val account = AccountTransactions(List(
-            Income(1, "c1", "desc1"),
-            Income(1, "c1", "desc1"),
-            Expense(4, "c2", "desc1"),
-            Income(10, "c1", "desc1"),
-            Expense(4, "c2", "desc1")
-          ))
+    val account = AccountTransactions(List())
     println(
       balance(account.transactions),
 //      categorize(account),

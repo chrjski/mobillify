@@ -6,6 +6,7 @@
  */
 package ks.browser.account
 
+import java.text.SimpleDateFormat
 import java.util
 import java.util.Date
 
@@ -15,15 +16,28 @@ import org.slf4j.LoggerFactory
 import spark.QueryParamsMap
 
 class AccountDao() {
+  def parseTransaction(map: QueryParamsMap) = {
+    map.get("transactionType").value() match {
+      case "income" => income(map)
+      case "expense" => expense(map)
+    }
+  }
+
+
+  def parseTransactionMap(map: QueryParamsMap): Mobilify.Transaction = {
+    new Mobilify.Transaction {
+      override val amount: Float = map.get("amount").floatValue
+      override val transactionDate: Date = new SimpleDateFormat("yyyy-MM-dd").parse(map.get("date").value())
+      override val category: String = map.get("category").value
+      override val description: String = map.get("description").value
+    }
+  }
+
 
   def income(map: QueryParamsMap) = {
     val account = map.get("account").value()
-    val amount = map.get("amount").floatValue()
-    val category = map.get("category").value()
-    val description = map.get("description").value()
-    val date = map.get("date").value()
 
-    transaction(Income(amount, category, description))(account)
+    transaction(new Income(parseTransactionMap(map)))(account)
   }
 
   def transaction(transaction: Mobilify.Transaction)(account: String) = {
@@ -40,12 +54,8 @@ class AccountDao() {
 
   def expense(map: QueryParamsMap) = {
     val account = map.get("account").value()
-    val amount = map.get("amount").floatValue()
-    val category = map.get("category").value()
-    val description = map.get("description").value()
-    val date = map.get("date").value()
 
-    transaction(Expense(amount, category, description))(account)
+    transaction(new Expense(parseTransactionMap(map)))(account)
   }
 
   def add(accountName: String) = {
@@ -72,6 +82,43 @@ class AccountDao() {
     }
   }
 
+  def get(accName: String, transactionId: Long): Transaction = {
+    val maybeAccount = getMA(accName)
+    if (maybeAccount.isDefined) {
+      AccountUtil.convert(
+      maybeAccount
+        .get
+        .transactions
+        .transactions
+        .filter(_.iddate == transactionId).head)
+    } else {
+      throw new IllegalArgumentException
+    }
+  }
+}
+
+object AccountUtil {
+  def convert(el: Mobilify.Transaction) = {
+    new Transaction {
+      override def getAmount() = el.amount
+
+      override def getDate() = el.transactionDate
+
+      override def getCategory() = el.category
+
+      override def getDescription() = el.description
+
+      override def toString() = el.category + " " + el.amount + " " + el.transactionDate
+
+      def getType(): String = el match {
+        case Expense(_, _, _, _) => "expense"
+        case Income(_, _, _, _) => "income"
+      }
+
+      override def getId(): Long = el.iddate
+
+    }
+  }
 }
 
 trait Account {
@@ -92,23 +139,7 @@ case class ValidAccount(account: Mobilify.Account) extends Account {
       .transactions
       .transactions
       .foldLeft(new util.LinkedList[Transaction])((acc, el) => {
-        val transaction = new Transaction {
-          override def getAmount() = el.amount
-
-          override def getDate() = el.transactionDate
-
-          override def getCategory() = el.category
-
-          override def getDescription() = el.description
-
-          override def toString() = el.category + " " + el.amount + " " + el.transactionDate
-
-          def getType(): String = el match {
-            case Expense(_,_,_) => "expense"
-            case Income(_,_,_) => "income"
-//            case Income(_,_,_) => "income"
-          }
-        }
+        val transaction = AccountUtil.convert(el)
         acc.add(transaction)
         acc
       })
@@ -133,7 +164,11 @@ trait Transaction {
 
   def getDate(): Date
 
+  def getId(): Long
+
   def getCategory(): String
 
   def getDescription(): String
+
+  def getType(): String
 }

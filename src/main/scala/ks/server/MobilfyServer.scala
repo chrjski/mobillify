@@ -13,17 +13,17 @@ object MobilfyServer extends App {
 
   get(Link.Dashboard, Routes.Dashboard)
 
-  get(Link.Income,    Routes.Income)
-  post(Link.Income,    Routes.IncomePost())
+  get(Link.Expense, Routes.Expense)
+  get(Link.Income, Routes.Income)
+  post(Link.Income, Routes.TransactionPosted)
+  post(Link.Expense, Routes.TransactionPosted)
 
-  get(Link.Expense,   Routes.Expense)
-  post(Link.Expense,   Routes.ExpensePost)
+  get(Link.Transfer, Routes.Transfer)
 
-  get(Link.Transfer,  Routes.Transfer)
-
-  get(Link.Accounts,  Routes.Accounts)
-  post(Link.Accounts,  Routes.AccountPosted)
+  get(Link.Accounts, Routes.Accounts)
+  post(Link.Accounts, Routes.AccountPosted)
   get(Link.AccountDetails, Routes.AccountDetail)
+  post(Link.AccountDetailsEditTransaction, Routes.AccountDetailsEditTransaction)
 
-  get(Link.Categories, Routes.Categories
+  get(Link.Categories, Routes.Categories)
 }
