@@ -9,20 +9,24 @@ object Paths {
   val log: Logger = LoggerFactory.getLogger(Paths.getClass)
 
   object Link {
+
     val Dashboard = "/"
     val Income = "/income"
     val Expense = "/expense"
     val Transfer = "/transfer"
     val Accounts = "/accounts"
     val AccountDetails = "/accounts/details/:accName"
+
+    val Categories = "/categories"
+    val CategoryDetail = "/categories/details/:category"
   }
 
   object Templates {
 
     val Body = "templates/body.vm"
     val Dashboard = "templates/dashboard.vm"
-    val Expense = "templates/expense.vm"
-    val Income = "templates/income.vm"
+    val Expense = "templates/expenses/expense.vm"
+    val Income = "templates/incomes/income.vm"
     val Transfer = "templates/transfer.vm"
     val Accounts = "templates/accounts.vm"
     val AccountDetail = "templates/accounts/accountDetail.vm"
@@ -36,8 +40,9 @@ object Paths {
         "links" -> List((Link.Income, "Income"),
           (Link.Expense, "Expense"),
           (Link.Transfer, "Transfer"),
-          (Link.Accounts, "Accounts"))
-          .toArray
+          (Link.Accounts, "Accounts"),
+          (Link.Categories, "Categories")
+        ).toArray
       ), Templates.Dashboard)
 
     def Expense(): Route = (req: Request, res: Response) => {
@@ -48,14 +53,25 @@ object Paths {
     }
 
     def ExpensePost(): Route = (req: Request, res: Response) => {
-      log.info("Expense added "+req.queryMap())
+      log.info("Expense added")
       accdao.expense(req.queryMap())
       res.redirect("/expense")
-      ""
+      "expense added"
     }
 
-    def Income(): Route = (req: Request, res: Response) =>
-      ViewUtil.render(req, Map(), Templates.Income)
+    def IncomePost(): Route = (req: Request, res: Response) => {
+      log.info("Income added")
+      accdao.income(req.queryMap())
+      res.redirect("/income")
+      "income added"
+    }
+
+    def Income(): Route = (req: Request, res: Response) => {
+      log.info("Adding an income")
+      ViewUtil.render(req, Map(
+        "accounts" -> accdao.all()
+      ), Templates.Income)
+    }
 
     def Transfer(): Route = (req: Request, res: Response) =>
       ViewUtil.render(req, Map(), Templates.Transfer)
@@ -115,6 +131,10 @@ object Paths {
             Templates.AccountDetail)
       }
     }
-  }
 
+    def Categories(): Route = (req: Request, res: Response) => {
+
+      ""
+    }
+  }
 }

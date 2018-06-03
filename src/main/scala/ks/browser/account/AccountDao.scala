@@ -9,12 +9,43 @@ package ks.browser.account
 import java.util
 import java.util.Date
 
+import ks.mobilify.engine.Mobilify.{Expense, Income}
 import ks.mobilify.engine.{DataStore, Mobilify}
+import org.slf4j.LoggerFactory
 import spark.QueryParamsMap
 
 class AccountDao() {
+
+  def income(map: QueryParamsMap) = {
+    val account = map.get("account").value()
+    val amount = map.get("amount").floatValue()
+    val category = map.get("category").value()
+    val description = map.get("description").value()
+    val date = map.get("date").value()
+
+    transaction(Income(amount, category, description))(account)
+  }
+
+  def transaction(transaction: Mobilify.Transaction)(account: String) = {
+    val logger = LoggerFactory.getLogger(getClass)
+
+    val value: Option[Mobilify.Account] = getMA(account)
+    if (value.isDefined) {
+      logger.info("Adding " + transaction)
+      value.get.transactions.transactions = transaction :: value.get.transactions.transactions
+    } else {
+      logger.error("Wrong account " + account)
+    }
+  }
+
   def expense(map: QueryParamsMap) = {
-    // TODO implement
+    val account = map.get("account").value()
+    val amount = map.get("amount").floatValue()
+    val category = map.get("category").value()
+    val description = map.get("description").value()
+    val date = map.get("date").value()
+
+    transaction(Expense(amount, category, description))(account)
   }
 
   def add(accountName: String) = {
@@ -30,12 +61,14 @@ class AccountDao() {
       })
   }
 
+  private def getMA(accName: String): Option[Mobilify.Account] = DataStore.accounts.filter(_.name.equals(accName)).headOption
+
   def get(accName: String): Account = {
-    val accounts = DataStore.accounts.filter(_.name.equals(accName))
-    if (accounts.isEmpty) {
-      NAAccount
-    } else {
+    val accounts: Option[Mobilify.Account] = getMA(accName)
+    if (accounts.isDefined) {
       new ValidAccount(accounts.head)
+    } else {
+      NAAccount
     }
   }
 
@@ -50,21 +83,31 @@ trait Account {
 case class ValidAccount(account: Mobilify.Account) extends Account {
   override def getName(): String = account.name
 
+  def getBalance() = {
+    Mobilify.balance(account.transactions)
+  }
+
   override def getTransactions(): util.List[Transaction] = {
     account
       .transactions
       .transactions
       .foldLeft(new util.LinkedList[Transaction])((acc, el) => {
         val transaction = new Transaction {
-          override def getAmount(): Int = el.amout
+          override def getAmount() = el.amount
 
-          override def getDate(): Date = el.date
+          override def getDate() = el.transactionDate
 
-          override def getCategory(): String = el.category
+          override def getCategory() = el.category
 
-          override def getDescription(): String = el.description
+          override def getDescription() = el.description
 
-          override def toString(): String = el.category + " " + el.amout + " " + el.date
+          override def toString() = el.category + " " + el.amount + " " + el.transactionDate
+
+          def getType(): String = el match {
+            case Expense(_,_,_) => "expense"
+            case Income(_,_,_) => "income"
+//            case Income(_,_,_) => "income"
+          }
         }
         acc.add(transaction)
         acc
@@ -86,7 +129,7 @@ trait AccountTransactions {
 }
 
 trait Transaction {
-  def getAmount(): Int
+  def getAmount(): Float
 
   def getDate(): Date
 

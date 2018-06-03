@@ -8,45 +8,47 @@ import java.util.Date
 object Mobilify extends App {
 
   trait Transaction {
-    val amout: Int
-    val date: Date = new Date()
-    val category: String
-    val description: String
+    val iddate: Date = new Date()
+
+    var amount: Float
+    var transactionDate: Date = new Date()
+    var category: String
+    var description: String
   }
 
-  case class Income(inAmount: Int,
+  case class Income(inAmount: Float,
                     override val category: String,
                     override val description: String) extends Transaction {
-    override val amout: Int = inAmount
+    override val amount = inAmount
   }
 
-  case class Expense(exAmount: Int,
+  case class Expense(exAmount: Float,
                      override val category: String,
                      override val description: String) extends Transaction {
-    override val amout: Int = -exAmount
+    override val amount = -exAmount
   }
 
   case class Account(name: String) {
-    var transactions: AccountTransactions = AccountTransactions(List())
+    var transactions: AccountTransactions = AccountTransactions(List[Transaction]())
   }
 
-  case class AccountTransactions(transactions: Iterable[Transaction])
+  case class AccountTransactions(var transactions: List[Transaction])
 
-  def balance(account: AccountTransactions): Int = balance(account.transactions)
+  def balance(account: AccountTransactions): Float = balance(account.transactions)
 
-  def balance(transactions: Iterable[Transaction]): Int = transactions.foldLeft(0)((acc, tr) => acc + tr.amout)
+  def balance(transactions: Iterable[Transaction]): Float =
+    transactions.foldLeft(0f)((acc, tr) => acc + tr.amount)
 
   def categorize(account: AccountTransactions): Map[String, Iterable[Transaction]] = account.transactions.groupBy(_.category)
 
   override def main(args: Array[String]): Unit = {
-    val account = AccountTransactions(
-      List(
-        Income(1, "c1", "desc1"),
-        Income(1, "c1", "desc1"),
-        Expense(4, "c2", "desc1"),
-        Income(10, "c1", "desc1"),
-        Expense(4, "c2", "desc1")
-      ))
+    val account = AccountTransactions(List(
+            Income(1, "c1", "desc1"),
+            Income(1, "c1", "desc1"),
+            Expense(4, "c2", "desc1"),
+            Income(10, "c1", "desc1"),
+            Expense(4, "c2", "desc1")
+          ))
     println(
       balance(account.transactions),
 //      categorize(account),

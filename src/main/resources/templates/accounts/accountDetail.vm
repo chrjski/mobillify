@@ -9,7 +9,7 @@
             #else
             #foreach ($transaction in ${account.transactions})
             <li>
-                <div>
+                <div class="$transaction.type">
                     <div>$transaction.category</div>
                     <div>$transaction.amount</div>
                     <div>$transaction.date</div>

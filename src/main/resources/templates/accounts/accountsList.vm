@@ -12,7 +12,10 @@
         #foreach ($account in $accounts)
         <div>
             <ul>
-                <li><a href="/accounts/details/${account.name}">${account.name}</a></li>
+                <li>
+                    <div><a href="/accounts/details/${account.name}">${account.name}</a></div>
+                    <div>${account.balance}</div>
+                </li>
             </ul>
         </div>
         #end

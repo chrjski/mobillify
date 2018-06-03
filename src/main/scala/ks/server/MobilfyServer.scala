@@ -12,13 +12,18 @@ object MobilfyServer extends App {
   internalServerError("<a href='/'>Go to dashboard</a>")
 
   get(Link.Dashboard, Routes.Dashboard)
+
   get(Link.Income,    Routes.Income)
+  post(Link.Income,    Routes.IncomePost())
+
   get(Link.Expense,   Routes.Expense)
   post(Link.Expense,   Routes.ExpensePost)
+
   get(Link.Transfer,  Routes.Transfer)
 
   get(Link.Accounts,  Routes.Accounts)
   post(Link.Accounts,  Routes.AccountPosted)
   get(Link.AccountDetails, Routes.AccountDetail)
 
+  get(Link.Categories, Routes.Categories
 }

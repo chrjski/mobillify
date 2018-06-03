@@ -3,7 +3,7 @@
     <form>
         <div>
             <label for="account">Provide account name</label>
-            <select id="account">
+            <select id="account" name="account">
                 #foreach ($account in $accounts)
                 <option value="$account.name" name="account">$account.name</option>
                 #end
@@ -22,7 +22,9 @@
             </div>
             <div>
                 <label for="date">On date</label>
-                <input id="date" type="datetime-local" name="date"/>
+                <input id="date"
+                       type="datetime-local"
+                       name="date" />
             </div>
         </div>
         <div>
