@@ -34,7 +34,8 @@ object Paths {
   }
 
   object Routes {
-    val accdao: AccountDao = new AccountDao()
+    val accdao = new AccountDao()
+//    val trdao= new TransactionsDao()
 
     def Dashboard(): Route = (req: Request, res: Response) =>
       ViewUtil.render(req, Map(
@@ -44,6 +45,7 @@ object Paths {
           (Link.Accounts, "Accounts"),
           (Link.Categories, "Categories")
         ).toArray
+//        ,"transactions" -> trdao.getAll.toArray
       ), Templates.Dashboard)
 
     def Expense(): Route = (req: Request, res: Response) => {
@@ -140,14 +142,20 @@ object Paths {
       }
     }
 
-    def AccountDetailsEditTransaction: Route = (req: Request, res: Response) => {
-      // TODO : apply edits
-      accdao.parseTransaction(req.queryMap())
+    def AccountDetailsEditTransactionPosted: Route = (req: Request, res: Response) => {
+      log.info(s"AccountDetailsEditTransaction")
+      accdao.parseTransaction(req.queryMap(), Option(req.params(":id").toLong))
+      res.redirect(Paths.Link.AccountDetails
+        .replace(":accName", req.params(":accName"))
+      )
+      "geddd aouut"
+    }
 
-      log.info("AccountDetailsEditTransaction")
+    def AccountDetailsEditTransaction: Route = (req: Request, res: Response) => {
       val accName = req.params(":accName")
       val id = req.params(":id").toLong
 
+      log.info(s"AccountDetailsEditTransaction ${accName} $id")
       val transaction = accdao.get(accName, id)
 
       ViewUtil.render(

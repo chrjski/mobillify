@@ -16,7 +16,9 @@
                     <div>$transaction.description</div>
                     <div>
                         <form>
-                            <input type="submit" value="Edit" formaction="/accounts/details/$account.name/edit/transaction/$transaction.id" formmethod="post" />
+                            <input type="submit" value="Edit"
+                                   formaction="/accounts/details/$account.name/edit/transaction/$transaction.id"
+                                   formmethod="GET"/>
                         </form>
                     </div>
                 </div>

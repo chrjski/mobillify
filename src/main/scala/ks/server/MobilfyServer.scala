@@ -23,7 +23,8 @@ object MobilfyServer extends App {
   get(Link.Accounts, Routes.Accounts)
   post(Link.Accounts, Routes.AccountPosted)
   get(Link.AccountDetails, Routes.AccountDetail)
-  post(Link.AccountDetailsEditTransaction, Routes.AccountDetailsEditTransaction)
+  get(Link.AccountDetailsEditTransaction, Routes.AccountDetailsEditTransaction)
+  post(Link.AccountDetailsEditTransaction, Routes.AccountDetailsEditTransactionPosted)
 
   get(Link.Categories, Routes.Categories)
 }

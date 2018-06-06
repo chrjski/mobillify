@@ -16,10 +16,10 @@ import org.slf4j.LoggerFactory
 import spark.QueryParamsMap
 
 class AccountDao() {
-  def parseTransaction(map: QueryParamsMap) = {
+  def parseTransaction(map: QueryParamsMap, tid: Option[Long] = Option.empty) = {
     map.get("transactionType").value() match {
-      case "income" => income(map)
-      case "expense" => expense(map)
+      case "income" => income(map)(tid)
+      case "expense" => expense(map)(tid)
     }
   }
 
@@ -34,28 +34,32 @@ class AccountDao() {
   }
 
 
-  def income(map: QueryParamsMap) = {
+  def income(map: QueryParamsMap)(tid: Option[Long] = Option.empty) = {
     val account = map.get("account").value()
 
-    transaction(new Income(parseTransactionMap(map)))(account)
+    transaction(new Income(parseTransactionMap(map)))(account, tid)
   }
 
-  def transaction(transaction: Mobilify.Transaction)(account: String) = {
+  def transaction(transaction: Mobilify.Transaction)(account: String, tid: Option[Long] = Option.empty) = {
     val logger = LoggerFactory.getLogger(getClass)
 
     val value: Option[Mobilify.Account] = getMA(account)
     if (value.isDefined) {
       logger.info("Adding " + transaction)
-      value.get.transactions.transactions = transaction :: value.get.transactions.transactions
+      if (tid.isDefined) {
+        value.get.transactions.transactions = value.get.transactions.transactions.map(x => if (x.iddate == tid.get) transaction else x)
+      } else {
+        value.get.transactions.transactions = transaction :: value.get.transactions.transactions
+      }
     } else {
       logger.error("Wrong account " + account)
     }
   }
 
-  def expense(map: QueryParamsMap) = {
+  def expense(map: QueryParamsMap)(tid: Option[Long] = Option.empty) = {
     val account = map.get("account").value()
 
-    transaction(new Expense(parseTransactionMap(map)))(account)
+    transaction(new Expense(parseTransactionMap(map)))(account, tid)
   }
 
   def add(accountName: String) = {
@@ -86,11 +90,11 @@ class AccountDao() {
     val maybeAccount = getMA(accName)
     if (maybeAccount.isDefined) {
       AccountUtil.convert(
-      maybeAccount
-        .get
-        .transactions
-        .transactions
-        .filter(_.iddate == transactionId).head)
+        maybeAccount
+          .get
+          .transactions
+          .transactions
+          .filter(_.iddate == transactionId).head)(maybeAccount.get.name)
     } else {
       throw new IllegalArgumentException
     }
@@ -98,7 +102,7 @@ class AccountDao() {
 }
 
 object AccountUtil {
-  def convert(el: Mobilify.Transaction) = {
+  def convert(el: Mobilify.Transaction)(accountName: String) = {
     new Transaction {
       override def getAmount() = el.amount
 
@@ -117,6 +121,7 @@ object AccountUtil {
 
       override def getId(): Long = el.iddate
 
+      def getAccountName() = accountName
     }
   }
 }
@@ -139,7 +144,7 @@ case class ValidAccount(account: Mobilify.Account) extends Account {
       .transactions
       .transactions
       .foldLeft(new util.LinkedList[Transaction])((acc, el) => {
-        val transaction = AccountUtil.convert(el)
+        val transaction = AccountUtil.convert(el)(account.name)
         acc.add(transaction)
         acc
       })
