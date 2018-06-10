@@ -1,8 +1,5 @@
 package ks.server.util
 
-import java.text.SimpleDateFormat
-
-import ks.browser.account._
 import org.slf4j.{Logger, LoggerFactory}
 import spark.{Request, Response, Route}
 
@@ -34,8 +31,6 @@ object Paths {
   }
 
   object Routes {
-    val accdao = new AccountDao()
-//    val trdao= new TransactionsDao()
 
     def Dashboard(): Route = (req: Request, res: Response) =>
       ViewUtil.render(req, Map(
@@ -45,138 +40,6 @@ object Paths {
           (Link.Accounts, "Accounts"),
           (Link.Categories, "Categories")
         ).toArray
-//        ,"transactions" -> trdao.getAll.toArray
       ), Templates.Dashboard)
-
-    def Expense(): Route = (req: Request, res: Response) => {
-      log.info("Adding an expense")
-      ViewUtil.render(req, Map(
-        "accounts" -> accdao.all(),
-        "transactionType" -> "expense",
-
-        "accName" -> "",
-        "amount" -> "",
-        "description" -> "",
-        "category" -> "",
-        "date" -> ""
-      ), Templates.Transaction)
-    }
-
-    def Income(): Route = (req: Request, res: Response) => {
-      log.info("Adding an income")
-      ViewUtil.render(req, Map(
-        "accounts" -> accdao.all(),
-        "transactionType" -> "income",
-
-        "accName" -> "",
-        "amount" -> "",
-        "description" -> "",
-        "category" -> "",
-        "date" -> ""
-      ), Templates.Transaction)
-    }
-
-    def TransactionPosted(): Route = (req: Request, res: Response) => {
-      log.info("Transaction added")
-      accdao.parseTransaction(req.queryMap())
-      res.redirect("#")
-      "income added"
-    }
-
-    def Transfer(): Route = (req: Request, res: Response) =>
-      ViewUtil.render(req, Map(), Templates.Transfer)
-
-    def Accounts(): Route = (req: Request, res: Response) => {
-      log.info("" + accdao.all)
-      ViewUtil.render(
-        req,
-        Map(
-          "accounts" -> accdao.all
-        ),
-        Templates.Accounts
-      )
-    }
-
-    def AccountPosted(): Route = (req: Request, res: Response) => {
-      val accountName: String = req.queryParams("account")
-
-      val account = accdao.get(accountName)
-
-      account match {
-        case NAAccount =>
-          log.info("Creating an account by name: " + accountName)
-          accdao.add(accountName)
-          res.redirect(Paths.Link.Accounts)
-          "redirect to accounts"
-
-        case ValidAccount(_) =>
-          log.info("Duplicated name " + accountName + " " + account)
-          ViewUtil.render(
-            req,
-            Map(
-              "accounts" -> accdao.all,
-              "duplicated" -> accountName
-            ),
-            Templates.Accounts
-          )
-
-      }
-    }
-
-    def AccountDetail(): Route = (req: Request, res: Response) => {
-      val accName = req.params(":accName")
-      val account = accdao.get(accName)
-      account match {
-        case NAAccount =>
-          res.redirect("404", 404)
-          "You drunk, go home"
-
-        case ValidAccount(_) =>
-          log.info("Filtered accounts for " + accName + " is " + account)
-          ViewUtil.render(
-            req,
-            Map(
-              "account" -> account
-            ),
-            Templates.AccountDetail)
-      }
-    }
-
-    def AccountDetailsEditTransactionPosted: Route = (req: Request, res: Response) => {
-      log.info(s"AccountDetailsEditTransaction")
-      accdao.parseTransaction(req.queryMap(), Option(req.params(":id").toLong))
-      res.redirect(Paths.Link.AccountDetails
-        .replace(":accName", req.params(":accName"))
-      )
-      "geddd aouut"
-    }
-
-    def AccountDetailsEditTransaction: Route = (req: Request, res: Response) => {
-      val accName = req.params(":accName")
-      val id = req.params(":id").toLong
-
-      log.info(s"AccountDetailsEditTransaction ${accName} $id")
-      val transaction = accdao.get(accName, id)
-
-      ViewUtil.render(
-        req,
-        Map(
-          "accounts" -> accdao.all,
-          "accName" -> accName,
-          "amount" -> transaction.getAmount().toString,
-          "description" -> transaction.getDescription(),
-          "category" -> transaction.getCategory(),
-          "date" -> new SimpleDateFormat("yyyy-MM-dd").format(transaction.getDate),
-          "transactionType" -> transaction.getType(),
-          "isEdit" -> true.toString
-        ),
-        Templates.Transaction
-      )
-    }
-
-    def Categories(): Route = (req: Request, res: Response) => {
-
-      ""
-    }
   }
 }
