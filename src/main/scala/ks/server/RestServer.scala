@@ -2,6 +2,8 @@ package ks.server
 
 import ks.server.RestServer.ApiPaths.dictionary
 import ks.server.rest.services._
+import ks.server.util.JSONTransformer
+import ks.server.util.JSONTransformer.toJson
 import org.slf4j.LoggerFactory
 import spark.Spark._
 import spark.{Request, Response, Route}
@@ -36,8 +38,8 @@ object RestServer extends App {
     before("/*", (req, res) => res.`type`("application/json"))
     before("/*", (req, res) => appendTrailingSlash(req, res))
 
-    notFound(error("Page not found"))
-    internalServerError(error("Internal Server Error"))
+    notFound(toJson(error("Page not found")))
+    internalServerError(toJson(error("Internal Server Error")))
 
     get("/", (req, res) => {
       res.`type`("html/text")
@@ -54,7 +56,7 @@ object RestServer extends App {
       val transaction = service.get(id)
 
       if (transaction.isDefined) success(transaction.get)
-      else error(s"Could not find by id $id in $service")
+      else error(s"Could not find by id '$id' in $service")
     }
 
     def accountsBalanceRoute(): Route = (req, res) => {
@@ -81,16 +83,39 @@ object RestServer extends App {
         get("/", (req, res) => {
           log.info(s"all ${service.all}")
           success(service.all)
-        })
+        }, JSONTransformer)
 
         get(s"/$getById/", (req, res) => {
+          log.info(s"get $getById")
           val id = req.params(s"$getById")
+          log.info(s"get $id from $service")
           getFromService(id, service)
-        })
+        }, JSONTransformer)
+
+        post(s"/$getById/", (req, res) => {
+          log.info(s"post $getById")
+          val id = req.params(s"$getById")
+          log.info(s"post $id from $service")
+          val created = service.create(id, req.body())
+          log.info(s"posted  ${created}")
+
+          success(created)
+        }, JSONTransformer)
+
+        delete(s"/$getById/", (req, res) => {
+          log.info(s"delete $getById")
+          val id = req.params(s"$getById")
+          log.info(s"delete $id from $service")
+          val deleted = service.delete(id)
+          log.info(s"deleted  ${deleted}")
+
+          success(deleted)
+        }, JSONTransformer)
+
 
         customs.foreach(customRoute => {
           log.info(s"Setting up custom pages ${customRoute._1}")
-          get(customRoute._1, customRoute._2)
+          get(customRoute._1, customRoute._2, JSONTransformer)
         })
       })
     }
@@ -109,12 +134,6 @@ object RestServer extends App {
     }
   }
 
-  private def json(any: Any) = {
-    import org.json4s.DefaultFormats
-    import org.json4s.native.Serialization.write
-    write(any)(DefaultFormats)
-  }
-
   import ks.server.util.Statuses._
   import ks.server.util.{StandardResponse, StatusResponse}
 
@@ -122,6 +141,6 @@ object RestServer extends App {
 
   def success(message: Any) = status(SUCCESS, message)
 
-  def status(status: StatusResponse, message: Any) = json(StandardResponse(status, message))
+  def status(status: StatusResponse, message: Any) = StandardResponse(status, message)
 
 }

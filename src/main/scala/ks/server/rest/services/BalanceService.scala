@@ -18,7 +18,7 @@ class BalanceService extends RestService[Balance] {
     .find(_.name == id)
     .map(x => Balance(x.name, Mobilify.balance(x.transactions)))
 
-  override def create(any: AnyRef): Balance = ???
+  override def create(id: String, any: AnyRef): Balance = ???
 
   override def delete(id: String): Boolean = ???
 }

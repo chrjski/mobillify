@@ -5,7 +5,7 @@ trait RestService[T] {
 
   def get(id: String): Option[T]
 
-  def create(any: AnyRef): T
+  def create(id: String, any: AnyRef): T
 
   def delete(id: String): Boolean
 
