@@ -21,4 +21,6 @@ class BalanceService extends RestService[Balance] {
   override def create(id: String, any: AnyRef): Balance = ???
 
   override def delete(id: String): Boolean = ???
+
+  override def update(id: String, str: String): Unit = ???
 }

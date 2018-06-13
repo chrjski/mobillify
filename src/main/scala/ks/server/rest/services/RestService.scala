@@ -9,5 +9,7 @@ trait RestService[T] {
 
   def delete(id: String): Boolean
 
+  def update(id: String, str: String)
+
   //  def filter
 }

@@ -97,7 +97,7 @@ object RestServer extends App {
           val id = req.params(s"$getById")
           log.info(s"post $id from $service")
           val created = service.create(id, req.body())
-          log.info(s"posted  ${created}")
+          log.info(s"posted  $created")
 
           success(created)
         }, JSONTransformer)
@@ -107,11 +107,20 @@ object RestServer extends App {
           val id = req.params(s"$getById")
           log.info(s"delete $id from $service")
           val deleted = service.delete(id)
-          log.info(s"deleted  ${deleted}")
+          log.info(s"deleted  $deleted")
 
           success(deleted)
         }, JSONTransformer)
 
+        put(s"/$getById/", (req, res) => {
+          log.info(s"put $getById")
+          val id = req.params(s"$getById")
+          log.info(s"put $id from $service")
+          val created = service.update(id, req.body())
+          log.info(s"put  $created")
+
+          success(created)
+        }, JSONTransformer)
 
         customs.foreach(customRoute => {
           log.info(s"Setting up custom pages ${customRoute._1}")

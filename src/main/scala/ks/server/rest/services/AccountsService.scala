@@ -23,4 +23,6 @@ class AccountsService extends RestService[Account] {
   }
 
   override def delete(id: String): Boolean = ???
+
+  override def update(id: String, str: String): Unit = ???
 }
