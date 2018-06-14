@@ -1,5 +1,8 @@
 package ks.server
 
+import ks.browser.HTMLServer
+import ks.browser.HTMLServer.render
+import ks.mobilify.engine.Mobilify.Transaction
 import ks.server.RestServer.ApiPaths.dictionary
 import ks.server.rest.services._
 import ks.server.util.JSONTransformer
@@ -31,10 +34,119 @@ object RestServer extends App {
   }
 
   port(45)
+
+  path("/app", () => {
+    staticFiles.location("/")
+    val log = LoggerFactory.getLogger("API Logger")
+
+    before("/*", (req, res) => log.info(s"Received app call ${req.pathInfo()}"))
+    before("/*", (req, res) => appendTrailingSlash(req, res))
+
+    notFound(toJson(error("Page not found")))
+    internalServerError(toJson(error("Internal Server Error")))
+
+    get("/", (req, res) => {
+      render("templates/dashboard.vm", Map()
+      )
+    })
+
+    get("/transactions/", (req, res) => {
+      val all = new TransactionsService().all
+      log.info(s"trans ${all}")
+      HTMLServer.renderPart("templates/transactions.vm", Map(
+        "transactions" -> all.foldLeft(new java.util.ArrayList[Transaction]())((acc, tr) => {
+          acc.add(tr)
+          acc
+        })
+      )
+      )
+    })
+
+    def getFromService[A <: Any](id: String, service: RestService[A]) = {
+      log.info(s"Requesting data $id from $service")
+      val transaction = service.get(id)
+
+      if (transaction.isDefined) success(transaction.get)
+      else error(s"Could not find by id '$id' in $service")
+    }
+
+    def accountsBalanceRoute(): Route = (req, res) => {
+      val id = req.params(s"${dictionary.account}")
+      getFromService(id, new BalanceService)
+    }
+
+    restPath(dictionary.accounts, dictionary.account, new AccountsService,
+      List(
+        (s"/${dictionary.account}/${dictionary.balance}/", accountsBalanceRoute))
+    )
+
+    restPath(dictionary.transactions, dictionary.transaction, new TransactionsService, List())
+
+    restPath(dictionary.balance, dictionary.account, new BalanceService, List())
+
+    def restPath[A <: Any](
+                            all: String,
+                            getById: String,
+                            service: RestService[A],
+                            customs: List[(String, Route)]
+                          ) = {
+      path(s"/$all/", () => {
+        get("/", (req, res) => {
+          log.info(s"all ${service.all}")
+          success(service.all)
+        }, JSONTransformer)
+
+        get(s"/$getById/", (req, res) => {
+          log.info(s"get $getById")
+          val id = req.params(s"$getById")
+          log.info(s"get $id from $service")
+          getFromService(id, service)
+        }, JSONTransformer)
+
+        post(s"/$getById/", (req, res) => {
+          log.info(s"post $getById")
+          val id = req.params(s"$getById")
+          log.info(s"post $id from $service")
+          val created = service.create(id, req.body())
+          log.info(s"posted  $created")
+
+          success(created)
+        }, JSONTransformer)
+
+        delete(s"/$getById/", (req, res) => {
+          log.info(s"delete $getById")
+          val id = req.params(s"$getById")
+          log.info(s"delete $id from $service")
+          val deleted = service.delete(id)
+          log.info(s"deleted  $deleted")
+
+          success(deleted)
+        }, JSONTransformer)
+
+        put(s"/$getById/", (req, res) => {
+          log.info(s"put $getById")
+          val id = req.params(s"$getById")
+          log.info(s"put $id from $service")
+          val created = service.update(id, req.body())
+          log.info(s"put  $created")
+
+          success(created)
+        }, JSONTransformer)
+
+        customs.foreach(customRoute => {
+          log.info(s"Setting up custom pages ${customRoute._1}")
+          get(customRoute._1, customRoute._2, JSONTransformer)
+        })
+      })
+    }
+  })
+
+
+
   path("/api", () => {
     val log = LoggerFactory.getLogger("API Logger")
 
-    before("/*", (req, res) => log.info("Received api call", req.pathInfo()))
+    before("/*", (req, res) => log.info(s"Received api call ${req.pathInfo()}"))
     before("/*", (req, res) => res.`type`("application/json"))
     before("/*", (req, res) => appendTrailingSlash(req, res))
 

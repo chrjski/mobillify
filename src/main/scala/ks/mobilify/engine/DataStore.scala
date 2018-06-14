@@ -7,7 +7,7 @@ import ks.mobilify.engine.Mobilify._
 
 object DataStore {
   private val income1 = Income(2, "c1", "desc1", new SimpleDateFormat("yyyy-MM-dd").parse("2018-02-10"), "Test acccount 2")
-  Thread.sleep(5) // testing only
+  Thread.sleep(2000) // testing only
   private val income2 = Income(2, "c1", "desc1", new SimpleDateFormat("yyyy-MM-dd").parse("2018-02-15"), "Test acccount 2")
   Thread.sleep(5)
   private val expense1 = Expense(4, "c2", "desc1", new SimpleDateFormat("yyyy-MM-dd").parse("2018-04-15"), "Test acccount 2")

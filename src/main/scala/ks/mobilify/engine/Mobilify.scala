@@ -12,7 +12,13 @@ object Mobilify extends App {
                              val category: String,
                              val description: String,
                              val transactionDate: Date,
-                             val iddate: Long)(val accountName: String)
+                             val iddate: Long)(val accountName: String) {
+    def getAccountName = accountName
+    def getAmount = value
+    def getDescription = description
+    def getTransactionDate = new SimpleDateFormat("yyyy-MM-dd").format(transactionDate)
+    def getCategory = category
+  }
 
   case class Income(override val value: Float,
                     override val category: String,

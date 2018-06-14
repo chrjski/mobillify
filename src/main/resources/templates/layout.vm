@@ -1,12 +1,10 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3mobile.css">
-    <style>
-        .expense {
-         background-color : tomato
-        }
-        .income {
-         background-color : palegreen
-        }
-    </style>
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/spinner.css">
+    <!--<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3mobile.css">-->
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="/js/vendor/intercooler-1.2.1.js"></script>
+
 </head>

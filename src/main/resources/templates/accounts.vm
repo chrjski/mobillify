@@ -1,4 +1,0 @@
-<div>
-    #parse("templates/accounts/accountsList.vm")
-    #parse("templates/accounts/addAnAccount.vm")
-</div>

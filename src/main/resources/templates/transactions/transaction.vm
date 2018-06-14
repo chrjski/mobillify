@@ -1,4 +1,0 @@
-<div>
-    <a href="/">Dashboard</a>
-    #parse("templates/transactions/addTransaction.vm")
-</div>

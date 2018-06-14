@@ -1,0 +1,11 @@
+<div class="transactions">
+    #foreach ($transaction in $transactions)
+    <div class="transaction">
+        <div class="amount">${transaction.getAmount()}</div>
+        <div class="category">${transaction.getCategory()}</div>
+        <div class="description">${transaction.getDescription()}</div>
+        <div class="accountName">${transaction.getAccountName()}</div>
+        <!--<div>${transaction.getTransactionDate()}</div>-->
+    </div>
+    #end
+</div>

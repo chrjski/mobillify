@@ -1,4 +1,4 @@
-<html>
+<html lang="en" data-framework="intercoolerjs">
 #include("templates/layout.vm")
 <body>
 #parse($body)
