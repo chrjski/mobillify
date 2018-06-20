@@ -1,10 +1,13 @@
-<div class="transactions">
+<div class="transactions wrapper">
     #foreach ($transaction in $transactions)
-    <div class="transaction">
-        <div class="amount">${transaction.getAmount()}</div>
-        <div class="category">${transaction.getCategory()}</div>
+    <div class="transaction wrapper">
+        <div class="icon">${emojis[${transaction.getCategory()}]}</div>
+        <div class="amount ${transaction.getType()}">${transaction.getAmount()}</div>
         <div class="description">${transaction.getDescription()}</div>
-        <div class="accountName">${transaction.getAccountName()}</div>
+        <div class="categoryAccountName wrapper">
+            <div class="category">${transaction.getCategory()}</div>
+            <div class="accountName"> | ${transaction.getAccountName()}</div>
+        </div>
         <!--<div>${transaction.getTransactionDate()}</div>-->
     </div>
     #end

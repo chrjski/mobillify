@@ -18,6 +18,7 @@ object Mobilify extends App {
     def getDescription = description
     def getTransactionDate = new SimpleDateFormat("yyyy-MM-dd").format(transactionDate)
     def getCategory = category
+    def getType: String
   }
 
   case class Income(override val value: Float,
@@ -33,6 +34,8 @@ object Mobilify extends App {
              description: String,
              transactionDate: String,
              accountName: String) = this(amount, category, description, new SimpleDateFormat("yyyy-MM-dd").parse(transactionDate), accountName, new Date().getTime)
+
+    override def getType = "Income"
   }
 
   case class Expense(amount: Float,
@@ -49,6 +52,7 @@ object Mobilify extends App {
              transactionDate: String,
              accountName: String) = this(amount, category, description, new SimpleDateFormat("yyyy-MM-dd").parse(transactionDate), accountName, new Date().getTime)
 
+    override def getType = "Expense"
   }
 
   case class Account(name: String, var transactions: List[Transaction])

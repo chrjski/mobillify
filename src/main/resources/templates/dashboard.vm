@@ -1,11 +1,11 @@
-<div class="wrapper">
+<div>
     <h1>Dashboard</h1>
 
     <div
             ic-get-from="/app/transactions/"
-            ic-trigger-on="load"
+            ic-trigger-on="timeout:500ms once"
     >
-        <div class="lds-facebook"><div></div><div></div><div></div></div>
+        #include ("templates/static/spinner.vm")
     </div>
 
 </div>

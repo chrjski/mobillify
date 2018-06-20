@@ -1,7 +1,7 @@
 package ks.server
 
-import ks.browser.HTMLServer
 import ks.browser.HTMLServer.render
+import ks.mobilify.engine.DataStore
 import ks.mobilify.engine.Mobilify.Transaction
 import ks.server.RestServer.ApiPaths.dictionary
 import ks.server.rest.services._
@@ -52,12 +52,21 @@ object RestServer extends App {
 
     get("/transactions/", (req, res) => {
       val all = new TransactionsService().all
-      log.info(s"trans ${all}")
-      HTMLServer.renderPart("templates/transactions.vm", Map(
+      log.info("get all transactions" +
+        "")
+      render("templates/transactions.vm", Map(
         "transactions" -> all.foldLeft(new java.util.ArrayList[Transaction]())((acc, tr) => {
           acc.add(tr)
           acc
         })
+        ,
+        "emojis" -> all
+          .map(tr => tr.category -> DataStore.getEmoji(tr.category))
+          .toMap
+            .foldLeft(new java.util.LinkedHashMap[String, String]())((acc, el) => {
+              acc.put(el._1, el._2)
+              acc
+            })
       )
       )
     })
