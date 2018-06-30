@@ -1,14 +1,19 @@
 <div class="transactions wrapper">
-    #foreach ($transaction in $transactions)
-    <div class="transaction wrapper">
-        <div class="icon">${emojis[${transaction.getCategory()}]}</div>
-        <div class="amount ${transaction.getType()}">${transaction.getAmount()}</div>
-        <div class="description">${transaction.getDescription()}</div>
-        <div class="categoryAccountName wrapper">
-            <div class="category">${transaction.getCategory()}</div>
-            <div class="accountName"> | ${transaction.getAccountName()}</div>
-        </div>
-        <!--<div>${transaction.getTransactionDate()}</div>-->
-    </div>
+    #foreach ($date in ${transactions.keySet()})
+        #set ($transactionsOnDate = ${transactions[$date]})
+        <div class="date">$date</div>
+        #foreach ($transaction in $transactionsOnDate)
+            <div class="transaction wrapper">
+                <div class="icon">${emojis[${transaction.getCategory()}]}</div>
+                <div class="amount ${transaction.getType()}">${transaction.getAmount()}</div>
+                <div class="description">${transaction.getDescription()}</div>
+                <div class="categoryAccountName wrapper">
+                    <div class="category">${transaction.getCategory()}</div>
+                    <div class="accountName">
+                        | ${transaction.getAccountName()}</div>
+                </div>
+                <!--<div>${transaction.getTransactionDate()}</div>-->d
+            </div>
+        #end
     #end
 </div>

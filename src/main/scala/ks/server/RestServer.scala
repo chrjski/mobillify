@@ -1,8 +1,11 @@
 package ks.server
 
+import java.text.SimpleDateFormat
+import java.util.Date
+
 import ks.browser.HTMLServer.render
 import ks.mobilify.engine.DataStore
-import ks.mobilify.engine.Mobilify.Transaction
+import ks.mobilify.engine.Mobilify.{Account, Expense, Income, Transaction}
 import ks.server.RestServer.ApiPaths.dictionary
 import ks.server.rest.services._
 import ks.server.util.JSONTransformer
@@ -41,6 +44,10 @@ object RestServer extends App {
 
     before("/*", (req, res) => log.info(s"Received app call ${req.pathInfo()}"))
     before("/*", (req, res) => appendTrailingSlash(req, res))
+    before("/*", (req, res) => {
+//      Thread.sleep(2000)
+    })
+
 
     notFound(toJson(error("Page not found")))
     internalServerError(toJson(error("Internal Server Error")))
@@ -50,23 +57,111 @@ object RestServer extends App {
       )
     })
 
-    get("/transactions/", (req, res) => {
+    get("/expensesByCategory/", (req, res) => {
       val all = new TransactionsService().all
-      log.info("get all transactions" +
-        "")
-      render("templates/transactions.vm", Map(
-        "transactions" -> all.foldLeft(new java.util.ArrayList[Transaction]())((acc, tr) => {
-          acc.add(tr)
+      log.info("categorize expenses")
+      render("templates/expensesByCategory.vm", Map(
+        "categories" -> all
+          //              .filter(_.transactionDate)
+          .groupBy(_.category)
+          .keys
+          .toList,
+        "expenses" ->
+          all
+            //              .filter(_.transactionDate)
+            .groupBy(_.category)
+            .foldLeft(new java.util.LinkedHashMap[String, List[Transaction]]())((acc, el) => {
+              acc.put(el._1, el._2)
+              acc
+            })
+      ))
+    })
+
+    post("/expense/", (req, res) => {
+      log.info(s"post adding income")
+
+      val json = "{" +
+        "\"amount\": " + req.queryMap().get("amount").value() + "," +
+        "\"category\": \"" + req.queryMap().get("category").value() + "\"," +
+        "\"description\": \"" + req.queryMap().get("description").value() + "\"," +
+        "\"transactionDate\": \"" + req.queryMap().get("date").value() + "\"," +
+        "\"accountName\": \"" + req.queryMap().get("account").value() + "\"" +
+        "}"
+      new TransactionsService().create("expense", json)
+    })
+
+    post("/income/", (req, res) => {
+      log.info(s"post adding income")
+
+      val json = "{" +
+        "\"amount\": " + req.queryMap().get("amount").value() + "," +
+        "\"category\": \"" + req.queryMap().get("category").value() + "\"," +
+        "\"description\": \"" + req.queryMap().get("description").value() + "\"," +
+        "\"transactionDate\": \"" + req.queryMap().get("date").value() + "\"," +
+        "\"accountName\": \"" + req.queryMap().get("account").value() + "\"" +
+        "}"
+      new TransactionsService().create("income", json)
+    })
+
+    get("/income/", (req, res) => {
+      log.info("add income")
+      render("templates/addIncome.vm", Map(
+        "accounts" ->
+          new AccountsService().all.foldLeft(new java.util.LinkedList[Account]())((acm, acc) => {
+            acm.add(acc)
+            acm
+          }),
+        "date" -> new SimpleDateFormat("yyyy-MM-dd").format(new Date),
+        "categories" -> new TransactionsService().all.foldLeft(new java.util.HashSet[String]())((acc, tr) => {
+          if (tr.isInstanceOf[Income]) acc.add(tr.category)
           acc
         })
+      ))
+    })
+
+    get("/expense/", (req, res) => {
+      log.info("add expense")
+      render("templates/addExpense.vm", Map(
+        "accounts" ->
+          new AccountsService().all.foldLeft(new java.util.LinkedList[Account]())((acm, acc) => {
+            acm.add(acc)
+            acm
+          }),
+        "date" -> new SimpleDateFormat("yyyy-MM-dd").format(new Date),
+        "categories" -> new TransactionsService().all.foldLeft(new java.util.HashSet[String]())((acc, tr) => {
+          if (tr.isInstanceOf[Expense]) acc.add(tr.category)
+          acc
+        })
+      ))
+    })
+
+    get("/transactions/", (req, res) => {
+      val all = new TransactionsService().all
+      log.info("get all transactions")
+      render("templates/transactions.vm", Map(
+        "transactions" -> all
+          .groupBy(_.transactionDate)
+          .foldLeft(
+            new java.util.TreeMap[String, java.util.LinkedList[Transaction]](
+              (o1: String, o2: String) => o2.compareTo(o1))
+          )((acc, tr) => {
+            val transactions = tr._2.foldLeft(new java.util.LinkedList[Transaction]())((acc1, el) => {
+              acc1.add(el)
+              acc1
+            })
+            acc.put(new SimpleDateFormat("yyyy-MM-dd").format(tr._1),
+              transactions
+            )
+            acc
+          })
         ,
         "emojis" -> all
           .map(tr => tr.category -> DataStore.getEmoji(tr.category))
           .toMap
-            .foldLeft(new java.util.LinkedHashMap[String, String]())((acc, el) => {
-              acc.put(el._1, el._2)
-              acc
-            })
+          .foldLeft(new java.util.LinkedHashMap[String, String]())((acc, el) => {
+            acc.put(el._1, el._2)
+            acc
+          })
       )
       )
     })
@@ -149,7 +244,6 @@ object RestServer extends App {
       })
     }
   })
-
 
 
   path("/api", () => {

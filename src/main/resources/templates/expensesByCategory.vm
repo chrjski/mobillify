@@ -1,0 +1,10 @@
+<div class="expenses wrapper">
+    <div>$categories</div>
+    <div>$expenses</div>
+    #foreach ($category in $categories)
+    <div class="categorizedExpenses wrapper">
+        <div>$category</div>
+        <!--<div>$expenses[$category]</div>-->
+    </div>
+    #end
+</div>

@@ -74,7 +74,8 @@ object DataStore {
     }
 
     private def randDate = {
-      new SimpleDateFormat("yyyy-MM-dd").parse(s"2018-${(Math.random() * 12 + 1).toInt}-${(Math.random() * 27 + 1).toInt}")
+      new SimpleDateFormat("yyyy-MM-dd")
+      .parse(s"2018-${(Math.random() * 3 + 1).toInt}-${(Math.random() * 5 + 1).toInt}")
     }
 
     private def randDesc = {

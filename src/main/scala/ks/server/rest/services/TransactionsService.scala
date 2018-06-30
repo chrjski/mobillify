@@ -24,7 +24,11 @@ class TransactionsService extends RestService[Transaction] {
   override def create(id: String, any: AnyRef): Transaction = {
     log.info(s"$id for $any")
 
-    val transaction: Transaction = jsonToTransaction(id, any)
+    val transaction: Transaction =
+      any match {
+        case x: Transaction => x
+        case _ => jsonToTransaction(id, any)
+      }
 
     val mAccount = new AccountsService().get(transaction.accountName)
 

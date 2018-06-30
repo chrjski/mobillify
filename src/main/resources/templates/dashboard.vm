@@ -1,11 +1,32 @@
 <div>
     <h1>Dashboard</h1>
 
-    <div
-            ic-get-from="/app/transactions/"
-            ic-trigger-on="timeout:500ms once"
-    >
-        #include ("templates/static/spinner.vm")
+    ## <div id="menu" class="wrapper">
+    ##     <a href="#balance" id="balance" onclick="false">Balance</a>
+    ##     <a href="#transactions" id="transactions" onclick="false" ic-get-from="/app/transactions/" ic-target="#content">Transactions</a>
+    ##     <a href="#income" id="income" onclick="false" ic-get-from="/app/income/" ic-target="#content">Add Income</a>
+    ##     <a href="#expense" id="expense" onclick="false" ic-get-from="/app/expense/" ic-target="#content">Add Expense</a>
+    ## </div>
+    <div id="menuId" class="menuContent">
+        <div class="ox size">
+            <a class="O" href="#menuId">☰</a>
+            <a class="X" href="#">‖</a>
+        </div>
+        <div class="A trans size">
+            <a
+                href="#transactions"
+                id="transactions"
+                onclick="false"
+                ic-get-from="/app/transactions/"
+                ic-target="#content">💰</a>
+        </div>
+        <div class="B trans size">
+            <a href="#income" id="income" onclick="false" ic-get-from="/app/income/" ic-target="#content">📈</a>
+        </div>
+        <div class="C trans size">
+            <a href="#expense" id="expense" onclick="false" ic-get-from="/app/expense/" ic-target="#content">   📉</a>
+        </div>
     </div>
-
+    <div id="content">
+    </div>
 </div>
