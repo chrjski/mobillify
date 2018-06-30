@@ -1,0 +1,14 @@
+
+.addIncome {
+    grid-template-columns: min-content 1fr;
+    background-color: olivedrab;
+}
+
+.addIncome #date {
+    width: 100%;
+}
+
+.addIncome #submit {
+    grid-column: 1 / span 2;
+    width: 100%;
+}

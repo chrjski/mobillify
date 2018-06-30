@@ -1,0 +1,27 @@
+<form 
+<!-- ic-post-to="/app/income/" --> 
+class="wrapper addExpense">
+    <label for="account">🏦</label>
+    <select id="account" name="account">
+        #foreach ($account in $accounts)
+            <option value="${account.name()}" name="account">
+                ${account.name()}
+            </option>
+        #end
+    </select>
+    <label for="amount">💰</label>
+    <input id="amount" type="text" name="amount" value="0"/>
+    <label for="category">🏺</label>
+    <select id="category" name="category">
+        #foreach ($category in $categories)
+            <option value="${category}" name="category">
+                ${category}
+            </option>
+        #end
+    </select>
+    <label for="description">🎤</label>
+    <input id="description" type="text" name="description" value=""/>
+    <label for="date">📅</label>
+    <input id="date" type="date" name="date" value="$date"/>
+    ## <input id="submit" type="submit" value="✔️" formaction="#" />
+</form>

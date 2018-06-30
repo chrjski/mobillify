@@ -1,0 +1,14 @@
+
+.addExpense {
+    grid-template-columns: min-content 1fr;
+    background-color: tomato;
+}
+
+.addExpense #date {
+    width: 100%;
+}
+
+.addExpense #submit {
+    grid-column: 1 / span 2;
+    width: 100%;
+}

@@ -1,0 +1,45 @@
+.transactions {
+    grid-template-columns: 1fr;
+    background-color: #fff;
+    color: #444;
+  }
+  
+  .transaction {
+      color: #fff;
+      grid-template-columns: 50px 1fr 1fr min-content;
+      grid-row-gap: 0px;
+  }
+  
+  .transaction .icon {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      transform: scale(1.8);
+      transform-origin: top left;
+  }
+  .transaction .amount {
+      grid-column: 4;
+      grid-row: 1 / 3;
+      align-self: center;
+  }
+  
+  .transaction .categoryAccountName {
+      grid-column: 2 / span 2;
+      grid-row: 2;
+      grid-template-columns: min-content max-content;
+      grid-gap: 0px;
+      padding: 0;
+  
+      color: gray;
+      font-size: smaller;
+  }
+  
+  .transaction .description {
+      grid-column: 2 / 4;
+      grid-row: 1;
+      color: black;
+  }
+  
+  .date {
+      margin-left: 10px;
+      font-size: small;
+  }

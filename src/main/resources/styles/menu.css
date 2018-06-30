@@ -1,0 +1,101 @@
+.size {
+    width: 50px;
+    height: 50px;
+}
+
+.menuContent a {
+    text-decoration: none;
+    margin: auto;
+    display: grid;
+    text-align: center;
+}
+
+.menuContent {
+    position: fixed;
+    bottom: 10px;
+    left: calc(100% - 110px);
+}
+
+.menuContent:target .A {
+    left: -10px;
+    top: 95px;
+}
+
+.menuContent:target .B {
+    left: -8px;
+    top: -10px;
+}
+
+.menuContent:target .C {
+    left: 45px;
+    top: -60px;
+}
+
+.menuContent:target .O {
+    display: none;
+    position: inherit;
+}
+
+.menuContent:target .X {
+    visibility: visible;
+    display: inherit;
+    position: inherit;
+}
+
+.menuContent:target .ox {
+    left: 45px;
+    bottom: -145px;
+}
+
+.O {
+    display: inherit;
+    position: inherit;
+    font-size: 32px;
+}
+
+.X {
+    display: none;
+    visibility: hidden;
+    position: inherit;
+    font-size: 32px;
+}
+
+.ox {
+    z-index: 11;
+    grid-area: A;
+    position: relative;
+    background-color: yellowgreen;
+    left: 45px;
+    bottom: -145px;
+}
+
+.A {
+    background-color: gainsboro;
+    grid-area: A;
+    position: relative;
+    left: 45px;
+    top: 95px;
+    font-size: 30px;
+}
+
+.B {
+    background-color: olivedrab;
+    grid-area: B;
+    position: relative;
+    left: 45px;
+    top: 45px;
+    font-size: 30px;
+}
+
+.C {
+    background-color: tomato;
+    grid-area: C;
+    position: relative;
+    left: 45px;
+    top: -5px;
+    font-size: 30px;
+}
+
+.trans {
+    transition: all 0.2s cubic-bezier(0.4, 0, 1, 1);
+}
