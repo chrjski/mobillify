@@ -88,6 +88,8 @@ object RestServer extends App {
         "\"accountName\": \"" + req.queryMap().get("account").value() + "\"" +
         "}"
       new TransactionsService().create("expense", json)
+      res.redirect("/app/transactions/")
+      "redirect"
     })
 
     post("/income/", (req, res) => {
@@ -101,6 +103,8 @@ object RestServer extends App {
         "\"accountName\": \"" + req.queryMap().get("account").value() + "\"" +
         "}"
       new TransactionsService().create("income", json)
+      res.redirect("/app/transactions/")
+      "redirect"
     })
 
     get("/income/", (req, res) => {

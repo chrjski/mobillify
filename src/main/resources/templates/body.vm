@@ -1,6 +1,23 @@
-<html lang="en" data-framework="intercoolerjs">
-#include("templates/layout.vm")
-<body>
-#parse($body)
-</body>
+<html lang="en">
+    #include("templates/layout.vm")
+    <body>
+        <h1>Dashboard</h1>
+        <div id="menuId" class="menuContent">
+            <div class="ox size">
+                <a class="O" href="#menuId">☰</a>
+                <a class="X" href="#">‖</a>
+            </div>
+            <div class="A trans size">
+                <a href="/app/transactions/" id="transactions">💰</a>
+            </div>
+            <div class="B trans size">
+                <a href="/app/income/" id="income">📈</a>
+            </div>
+            <div class="C trans size">
+                <a href="/app/expense/" id="expense">
+                    📉</a>
+            </div>
+        </div>
+        #parse($body)
+    </body>
 </html>

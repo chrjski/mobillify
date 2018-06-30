@@ -12,12 +12,3 @@ body {
 #menu {
     grid-template-columns: 1fr 1fr 1fr 1fr;
 }
-
-.ic-transitioning {
-  transition: all 500ms;
-  opacity: 0;
-}
-
-body {
-  opacity: 1;
-}

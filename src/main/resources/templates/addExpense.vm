@@ -1,6 +1,4 @@
-<form 
-<!-- ic-post-to="/app/income/" --> 
-class="wrapper addExpense">
+<form class="wrapper addExpense" action="/app/expense/" method="POST">
     <label for="account">🏦</label>
     <select id="account" name="account">
         #foreach ($account in $accounts)
@@ -23,5 +21,5 @@ class="wrapper addExpense">
     <input id="description" type="text" name="description" value=""/>
     <label for="date">📅</label>
     <input id="date" type="date" name="date" value="$date"/>
-    ## <input id="submit" type="submit" value="✔️" formaction="#" />
+    <input id="submit" type="submit" value="✔️" />
 </form>
